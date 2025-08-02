@@ -1,0 +1,198 @@
+📁 intern-portal
+
+├── client/                # Frontend
+│   ├── public/
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       │   ├── Dashboard.jsx
+│       │   └── Leaderboard.jsx
+│       ├── App.jsx
+│       ├── main.jsx
+│       └── index.css
+│
+├── server/                # Backend
+│   ├── routes/
+│   │   └── intern.js
+│   ├── app.js
+│
+├── README.md
+
+
+// 📄 README.md
+
+# Intern Portal – Round 1 Submission
+
+A professional full-stack intern portal built with React and Express.
+
+## 🚀 Features
+- React + Tailwind frontend
+- Express backend with dummy data
+- Dashboard with intern data
+- Static leaderboard (Bonus)
+- Clean UI and modern design
+
+## 🧪 How to Run
+
+### Frontend:
+```bash
+cd client
+npm install
+npm run dev
+```
+
+### Backend:
+```bash
+cd server
+npm install
+node app.js
+```
+
+## 📡 API
+GET `/api/intern` – returns mock intern info
+
+---
+
+// 📁 client/src/main.jsx
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+
+// 📁 client/src/App.jsx
+
+import React from 'react';
+import Dashboard from './pages/Dashboard';
+import Leaderboard from './pages/Leaderboard';
+
+function App() {
+  return (
+    <div className="p-4">
+      <h1 className="text-3xl font-bold mb-4 text-center">Intern Portal</h1>
+      <Dashboard />
+      <Leaderboard />
+    </div>
+  );
+}
+
+export default App;
+
+
+// 📁 client/src/pages/Dashboard.jsx
+
+import React, { useEffect, useState } from 'react';
+
+const Dashboard = () => {
+  const [intern, setIntern] = useState(null);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/intern')
+      .then(res => res.json())
+      .then(data => setIntern(data));
+  }, []);
+
+  return (
+    <div className="bg-white p-6 rounded shadow mb-6">
+      <h2 className="text-2xl font-semibold mb-2">Dashboard</h2>
+      {intern ? (
+        <div>
+          <p><strong>Name:</strong> {intern.name}</p>
+          <p><strong>Referral Code:</strong> {intern.referralCode}</p>
+          <p><strong>Total Donations:</strong> ₹{intern.donations}</p>
+          <div className="mt-4">
+            <h3 className="font-semibold">Rewards</h3>
+            <ul className="list-disc ml-6">
+              <li>Certificate</li>
+              <li>Intern Swag Kit</li>
+              <li>Leaderboard Recognition</li>
+            </ul>
+          </div>
+        </div>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+  );
+};
+
+export default Dashboard;
+
+
+// 📁 client/src/pages/Leaderboard.jsx
+
+import React from 'react';
+
+const Leaderboard = () => {
+  const leaderboard = [
+    { name: 'Ragavi P', donations: 14500 },
+    { name: 'Alex Kumar', donations: 12000 },
+    { name: 'Sneha Rao', donations: 11000 }
+  ];
+
+  return (
+    <div className="bg-white p-6 rounded shadow">
+      <h2 className="text-2xl font-semibold mb-4">Leaderboard</h2>
+      <ul>
+        {leaderboard.map((item, index) => (
+          <li key={index}>
+            {index + 1}. {item.name} – ₹{item.donations}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default Leaderboard;
+
+
+// 📁 client/src/index.css
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #f3f4f6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+// 📁 server/app.js
+
+const express = require('express');
+const cors = require('cors');
+const internRoute = require('./routes/intern');
+
+const app = express();
+app.use(cors());
+app.use('/api/intern', internRoute);
+
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+
+// 📁 server/routes/intern.js
+
+const express = require('express');
+const router = express.Router();
+
+router.get('/', (req, res) => {
+  res.json({
+    name: 'Ragavi P',
+    referralCode: 'ragavi2025',
+    donations: 14500
+  });
+});
+
+module.exports = router;
